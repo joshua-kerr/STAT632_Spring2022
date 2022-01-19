@@ -1,0 +1,181 @@
+---
+title: "R Notebook Example, STAT 632"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+<img src="http://www.csueastbay.edu/_global/images/header/csueb-logo.png" />
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r, results="hide"}
+# install.packages("pacman")
+require(pacman)
+p_load(ggplot2, devtools, dplyr, stringr, maps, mapdata, viridis, mapproj)
+```
+
+```{r, results="hide"}
+states <- map_data("state")
+ggplot(data = states) + geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + coord_fixed(1.3) +   guides(fill=FALSE)  # do this to leave off the color legend
+```
+
+```{r, echo=FALSE, fig.width=12}
+states <- map_data("state")
+ggplot(data = states) + geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + coord_fixed(1.3) +   guides(fill=FALSE)  # do this to leave off the color legend
+```
+
+
+
+
+
+```{r cars data}
+cars
+glimpse(cars)
+head(cars)
+```
+Summary
+```{r summary}
+summary(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+```{r carsplot1}
+plot(cars)
+```
+
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r carsplot}
+plot(cars)
+```
+
+Note that the document now includes the code used to generate the plot along with the plot itself. 
+
+```{r pressure}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter can be added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r fancy plot, echo=FALSE}
+x = seq(0,5,0.2)
+y = x
+f = function(x,y){ 2*exp(-x)*exp(-2*y) }
+z = outer(x,y,f)
+
+#X11()
+#par(mfrow=c(2,2))
+
+#persp(z)
+#persp(z,eye=c(5,-1,3))
+#persp(z,eye=c(-1,5,3))
+#persp(z,eye=c(5,5,3))
+
+### Example of plotting the joint normal distribution. 
+
+x = seq(-2,2,0.1)
+y = seq(-2,2,0.1)
+
+#X11()
+par(mfrow=c(2,2))
+
+bvn = function(x,y){
+	mu1 = 0
+	sigma1 = 1
+	mu2 = 0
+	sigma2 = 1
+	rho = 0
+	((2*pi*sigma1*sigma2*sqrt(1-rho^2))^(-1))*
+			exp( -(2*((1-rho^2))^(-1)) * ( (x-mu1)^2/sigma1^2 + (y-mu2)^2/sigma2^2
+			- ( (2*rho*(x-mu1)*(y-mu2) )/ (sigma1*sigma2) ) ) )
+}
+
+z1 = outer(x,y,bvn)
+zi <- z1[ -1,-1] + z1[ -1,-41] + z1[-41,-1] + z1[-41,-41]  ## / 4
+
+fcol <- matrix(0, nr = nrow(z1)-1, nc = ncol(z1)-1)
+fcol <- topo.colors(20)[cut(zi, stats::quantile(zi, seq(0,1, len = 21)), include.lowest = TRUE)]
+
+persp(x, y, z1, theta = -25, r=8, col = fcol, shade = 0.4, border = NA, main = expression(paste(rho,"=0")))
+bvn = function(x,y){
+	mu1 = 0
+	sigma1 = 1
+	mu2 = 0
+	sigma2 = 1
+	rho = 0.3
+	((2*pi*sigma1*sigma2*sqrt(1-rho^2))^(-1))*
+			exp( -(2*((1-rho^2))^(-1)) * ( (x-mu1)^2/sigma1^2 + (y-mu2)^2/sigma2^2
+			- ( (2*rho*(x-mu1)*(y-mu2) )/ (sigma1*sigma2) ) ) )
+}
+
+z2 = outer(x,y,bvn)
+persp(x, y, z2, theta = -25, r=8, col = fcol, shade = 0.4, border = NA, main = expression(paste(rho,"=0.3")))
+
+bvn = function(x,y){
+	mu1 = 0
+	sigma1 = 1
+	mu2 = 0
+	sigma2 = 1
+	rho = 0.6
+	((2*pi*sigma1*sigma2*sqrt(1-rho^2))^(-1))*
+			exp( -(2*((1-rho^2))^(-1)) * ( (x-mu1)^2/sigma1^2 + (y-mu2)^2/sigma2^2
+			- ( (2*rho*(x-mu1)*(y-mu2) )/ (sigma1*sigma2) ) ) )
+}
+
+z3 = outer(x,y,bvn)
+persp(x, y, z3, theta = -25, r=8, col = fcol, shade = 0.4, border = NA, main = expression(paste(rho,"=0.6")))
+
+bvn = function(x,y){
+	mu1 = 0
+	sigma1 = 1
+	mu2 = 0
+	sigma2 = 1
+	rho = -0.9
+	((2*pi*sigma1*sigma2*sqrt(1-rho^2))^(-1))*
+			exp( -(2*(1-rho^2)^(-1)) * ( (x-mu1)^2/sigma1^2 + (y-mu2)^2/sigma2^2
+			- ( (2*rho*(x-mu1)*(y-mu2) )/ (sigma1*sigma2) ) ) )
+}
+
+z4 = outer(x,y,bvn)
+persp(x, y, z4, theta = -25, r=8, d = .1, col = fcol, shade = 0.4, border = NA, main = expression(paste(rho,"=-0.9")))
+#X11()
+par(mfrow=c(2,2))
+
+contour(x,y,z1, main = expression(paste(rho,"=0")))
+contour(x,y,z2, main = expression(paste(rho,"=0.3")))
+contour(x,y,z3, main = expression(paste(rho,"=0.6")))
+contour(x,y,z4, main = expression(paste(rho,"=-0.9")))
+
+#X11()
+filled.contour(x,y,z1, color = heat.colors, main = expression(paste(rho,"=0")))
+#X11()
+filled.contour(x,y,z2, color = heat.colors, main = expression(paste(rho,"=0.3")))
+#X11()
+filled.contour(x,y,z3, color = heat.colors, main = expression(paste(rho,"=0.6")))
+#X11()
+filled.contour(x,y,z4, color = heat.colors, main = expression(paste(rho,"=-0.9")))
+```
+
+##  Including LaTex
+
+LaTex is a mathtype text editing language that allows for clean looking mathematical functions.  It is the industry standard in Academia. 
+
+I just called to say $\int_{0}^\infty -e^{-x} dx$?
+
+\textbf{Linear Regression}: modeling the relationship between a single continuous response variable $Y$, and one or more explanatory (or predictor) variables $X_1, X_2, \cdots, X_p$.
+\vspace{10pt}
+
+\textbf{Logistic Regression}: modeling the relationship between a single binary response variable $Y$, which takes on values 0 or 1, and one or more explanatory variables $X_1, X_2, \cdots, X_p$.
