@@ -1,9 +1,9 @@
 ---
 title: "R Notebook Example, STAT 632"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
+format:
+#  pdf
+  html:
+    self_contained: true
 ---
 
 <img src="http://www.csueastbay.edu/_global/images/header/csueb-logo.png" />
